@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80" viewBox="0 0 300 80">
+  <g>
+    <circle cx="40" cy="40" r="34" fill="#fff"/>
+    <g transform="translate(40 40)">
+      <path d="M0 0 L0 -30 A30 30 0 0 1 26 -15 Z" fill="#FCB711"/>
+      <path d="M0 0 L26 -15 A30 30 0 0 1 26 15 Z" fill="#F37021"/>
+      <path d="M0 0 L26 15 A30 30 0 0 1 0 30 Z" fill="#CC004C"/>
+      <path d="M0 0 L0 30 A30 30 0 0 1 -26 15 Z" fill="#6460AA"/>
+      <path d="M0 0 L-26 15 A30 30 0 0 1 -26 -15 Z" fill="#0089D0"/>
+      <path d="M0 0 L-26 -15 A30 30 0 0 1 0 -30 Z" fill="#0DB14B"/>
+      <circle cx="0" cy="0" r="7" fill="#fff"/>
+    </g>
+    <text x="90" y="52" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#ffffff">NBC</text>
+  </g>
+</svg>
