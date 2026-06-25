@@ -7,6 +7,10 @@ import type { StationTemplate } from "./types";
 // anchored bottom-left, and a bottom-aligned headline in Arthouse Owned Bold
 // (white, uppercase, thin dark outline) set to the right of the logo. A faint
 // top vignette adds depth.
+//
+// Logo asset: the official station-supplied NBC 6 lockup (white "6" + colored
+// peacock) as a transparent PNG (902x750). The white "6" only reads over the
+// dark scrim, which is exactly where it sits.
 const HEADLINE_FONT = '"Arthouse Owned Bold"';
 const STROKE = "rgba(0,0,0,0.5)";
 
@@ -41,9 +45,9 @@ export const wtvj: StationTemplate = {
           ],
         },
       ],
-      logo: { src: "/logos/nbc6-wtvj.svg", x: 52, y: 578, width: 230 },
+      logo: { src: "/logos/wtvj-logo.png", x: 44, y: 548, width: 180 },
       headline: {
-        box: { x: 300, y: 470, width: 940, height: 230 },
+        box: { x: 256, y: 470, width: 984, height: 230 },
         font: HEADLINE_FONT,
         weight: "normal",
         sizePx: 92,
@@ -83,9 +87,9 @@ export const wtvj: StationTemplate = {
           ],
         },
       ],
-      logo: { src: "/logos/nbc6-wtvj.svg", x: 70, y: 1640, width: 250 },
+      logo: { src: "/logos/wtvj-logo.png", x: 56, y: 1570, width: 253 },
       headline: {
-        box: { x: 340, y: 1430, width: 690, height: 340 },
+        box: { x: 336, y: 1430, width: 694, height: 350 },
         font: HEADLINE_FONT,
         weight: "normal",
         sizePx: 96,
