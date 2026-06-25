@@ -15,6 +15,7 @@ import {
   loadImageFromFile,
   type CropArea,
 } from "@/lib/images";
+import { collectImageSrcs } from "@/lib/layoutImages";
 import type { RenderInputs } from "@/lib/renderThumbnail";
 import { downloadThumbnail } from "@/lib/exportPng";
 
@@ -59,22 +60,23 @@ export default function Home() {
   const [cropping, setCropping] = useState<Orientation | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const [logos, setLogos] = useState<Record<string, HTMLImageElement>>({});
+  const [images, setImages] = useState<Record<string, HTMLImageElement>>({});
 
   const station = getStation(stationId)!;
 
-  // Load the logo(s) referenced by the current station's layouts.
+  // Load every image the current station's layouts reference (logo + headline
+  // accent patterns), for both orientations.
   useEffect(() => {
     const srcs = Array.from(
-      new Set(ORIENTATIONS.map((o) => station.layouts[o].logo.src)),
+      new Set(ORIENTATIONS.flatMap((o) => collectImageSrcs(station.layouts[o]))),
     );
     srcs.forEach((src) => {
-      if (logos[src]) return;
+      if (images[src]) return;
       loadImage(src)
-        .then((img) => setLogos((prev) => ({ ...prev, [src]: img })))
+        .then((img) => setImages((prev) => ({ ...prev, [src]: img })))
         .catch(() => {});
     });
-  }, [station, logos]);
+  }, [station, images]);
 
   function handleFile(file: File) {
     loadImageFromFile(file).then(({ image, url }) => {
@@ -102,10 +104,11 @@ export default function Home() {
   const inputsFor = useMemo(() => {
     return (o: Orientation): RenderInputs => ({
       photo: crops[o],
-      logo: logos[station.layouts[o].logo.src] ?? null,
+      logo: images[station.layouts[o].logo.src] ?? null,
       headline,
+      images,
     });
-  }, [crops, logos, station, headline]);
+  }, [crops, images, station, headline]);
 
   async function download(o: Orientation) {
     const layout = station.layouts[o];

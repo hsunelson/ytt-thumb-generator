@@ -13,6 +13,9 @@ export interface RenderInputs {
   // The station logo image (loaded).
   logo: CanvasImageSource | null;
   headline: string;
+  // Other loaded images referenced by the layout (e.g. headline accent
+  // patterns), keyed by their src URL.
+  images?: Record<string, CanvasImageSource>;
 }
 
 // Paints a complete thumbnail for one orientation onto `ctx`. This is the
@@ -54,7 +57,7 @@ export function renderThumbnail(
   // 6. Headline.
   const text = (inputs.headline ?? "").trim();
   if (text) {
-    drawHeadline(ctx, layout.headline, text);
+    drawHeadline(ctx, layout.headline, text, inputs.images);
   }
 }
 
@@ -132,11 +135,14 @@ function makeGradient(
 }
 
 // Draws the headline: applies transform, finds the largest font size at which
-// the wrapped text fits within the box and maxLines, then paints it.
+// the wrapped text fits within the box and maxLines, then paints it. Optionally
+// draws a solid block behind each line (`spec.highlight`) and image patches
+// anchored to the text-block corners (`spec.accents`).
 function drawHeadline(
   ctx: CanvasRenderingContext2D,
   spec: HeadlineSpec,
   raw: string,
+  images?: Record<string, CanvasImageSource>,
 ): void {
   const text = spec.transform === "uppercase" ? raw.toUpperCase() : raw;
   const minSize = spec.minSizePx ?? 24;
@@ -180,7 +186,6 @@ function drawHeadline(
       startY = spec.box.y;
   }
 
-  ctx.fillStyle = spec.color;
   ctx.textBaseline = "top";
   ctx.textAlign = spec.align;
 
@@ -191,6 +196,81 @@ function drawHeadline(
         ? spec.box.x + spec.box.width
         : spec.box.x + spec.box.width / 2;
 
+  // Per-line geometry: each line's left edge, top, and rendered text width.
+  // (Highlight blocks and accents are only meaningful for left alignment, which
+  // is what the block-style designs use.)
+  const lineInfos = lines.map((line, i) => {
+    const textWidth = ctx.measureText(line).width;
+    const left =
+      spec.align === "right"
+        ? spec.box.x + spec.box.width - textWidth
+        : spec.align === "center"
+          ? spec.box.x + (spec.box.width - textWidth) / 2
+          : spec.box.x;
+    return { line, top: startY + i * lineHeightPx, textWidth, left };
+  });
+
+  const hl = spec.highlight;
+
+  // Corner accents (drawn first, behind everything). Anchored to the first
+  // line's top-left and the last line's bottom-right block corner.
+  if (spec.accents && lineInfos.length > 0 && images) {
+    const first = lineInfos[0];
+    const last = lineInfos[lineInfos.length - 1];
+    const padX = hl?.padX ?? 0;
+    const padY = hl?.padY ?? 0;
+    for (const a of spec.accents) {
+      const img = images[a.src];
+      if (!img) continue;
+      let cornerX: number;
+      let cornerY: number;
+      if (a.corner === "tl") {
+        cornerX = first.left - padX;
+        cornerY = first.top - padY;
+        drawImageInBox(
+          ctx,
+          img,
+          {
+            x: cornerX - a.stickX,
+            y: cornerY - a.stickY,
+            width: a.width,
+            height: a.height,
+          },
+          "cover",
+        );
+      } else {
+        cornerX = last.left + last.textWidth + padX;
+        cornerY = last.top + lineHeightPx + padY;
+        drawImageInBox(
+          ctx,
+          img,
+          {
+            x: cornerX + a.stickX - a.width,
+            y: cornerY + a.stickY - a.height,
+            width: a.width,
+            height: a.height,
+          },
+          "cover",
+        );
+      }
+    }
+  }
+
+  // Per-line highlight blocks (drawn over the accents, behind the text).
+  if (hl) {
+    ctx.fillStyle = hl.color;
+    for (const info of lineInfos) {
+      ctx.fillRect(
+        info.left - hl.padX,
+        info.top - hl.padY,
+        info.textWidth + hl.padX * 2,
+        lineHeightPx + hl.padY * 2,
+      );
+    }
+  }
+
+  // Text.
+  ctx.fillStyle = spec.color;
   const hasStroke = spec.strokeColor && (spec.strokeWidthPx ?? 0) > 0;
   if (hasStroke) {
     ctx.strokeStyle = spec.strokeColor as string;
@@ -199,10 +279,9 @@ function drawHeadline(
     ctx.miterLimit = 2;
   }
 
-  lines.forEach((line, i) => {
-    const y = startY + i * lineHeightPx;
-    if (hasStroke) ctx.strokeText(line, anchorX, y);
-    ctx.fillText(line, anchorX, y);
+  lineInfos.forEach((info) => {
+    if (hasStroke) ctx.strokeText(info.line, anchorX, info.top);
+    ctx.fillText(info.line, anchorX, info.top);
   });
 }
 

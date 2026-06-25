@@ -68,12 +68,34 @@ export interface HeadlineSpec {
   // optional outline drawn behind the fill (for legibility over busy photos)
   strokeColor?: string;
   strokeWidthPx?: number;
+  // optional solid block drawn behind each line of text, sized to that line
+  // (e.g. KNSD's black-on-white headline). Lines stack as separate blocks.
+  highlight?: HeadlineHighlight;
+  // optional image patches anchored to the text-block corners, drawn behind the
+  // highlight blocks (e.g. KNSD's diagonal-stripe accents).
+  accents?: HeadlineAccent[];
   align: "left" | "center" | "right";
   // vertical anchoring of the text block within the box
   verticalAlign?: "top" | "middle" | "bottom";
   lineHeight: number; // multiple of font size, e.g. 1.1
   transform?: "uppercase" | "none";
   maxLines: number;
+}
+
+export interface HeadlineHighlight {
+  color: string; // block fill, e.g. "#ffffff"
+  padX: number; // horizontal padding around the text (px)
+  padY: number; // vertical padding around the text (px)
+  lineGap: number; // vertical gap between stacked line-blocks (px)
+}
+
+export interface HeadlineAccent {
+  src: string; // image URL (resolved from RenderInputs.images)
+  corner: "tl" | "br"; // anchor: top-left of first block / bottom-right of last
+  width: number;
+  height: number;
+  stickX: number; // how far the patch sticks out horizontally past the corner
+  stickY: number; // how far it sticks out vertically past the corner
 }
 
 // Simple decorative shapes drawn from the PSD (brand color bars, accents).
