@@ -1,9 +1,12 @@
 import type { StationTemplate } from "./types";
 
-// Generic Telemundo-style template. Placeholder design until a real station PSD
-// is translated. Uses a centered/lower headline and a brand-colored gradient
-// scrim distinct from the NBC variant.
-const TELEMUNDO_BLUE = "#0d3b8f";
+// Generic Telemundo template — WTVJ "Miami" style (full-bleed photo, vertical
+// scrim ramping to near-black at the bottom, faint top vignette, bottom-aligned
+// headline in Arthouse Owned Bold) with the generic Telemundo logo. Use as a
+// starting point for any Telemundo station that doesn't yet have its own
+// template.
+const HEADLINE_FONT = '"Arthouse Owned Bold"';
+const STROKE = "rgba(0,0,0,0.5)";
 
 export const telemundoGeneric: StationTemplate = {
   id: "telemundo-generic",
@@ -17,33 +20,37 @@ export const telemundoGeneric: StationTemplate = {
         type: "linear",
         angle: 90,
         stops: [
-          { offset: 0.4, color: "rgba(13,59,143,0)" },
-          { offset: 1, color: "rgba(13,59,143,0.9)" },
+          { offset: 0, color: "rgba(0,0,0,0)" },
+          { offset: 0.5, color: "rgba(0,0,0,0)" },
+          { offset: 0.72, color: "rgba(0,0,0,0.35)" },
+          { offset: 1, color: "rgba(0,0,0,0.95)" },
         ],
         box: { x: 0, y: 0, width: 1280, height: 720 },
       },
       decorations: [
         {
           type: "gradientRect",
-          box: { x: 0, y: 700, width: 1280, height: 20 },
-          angle: 0,
+          box: { x: 0, y: 0, width: 1280, height: 120 },
+          angle: 90,
           stops: [
-            { offset: 0, color: "#ff7a00" },
-            { offset: 1, color: TELEMUNDO_BLUE },
+            { offset: 0, color: "rgba(0,0,0,0.22)" },
+            { offset: 1, color: "rgba(0,0,0,0)" },
           ],
         },
       ],
-      logo: { src: "/logos/telemundo-generic.svg", x: 56, y: 48, width: 220 },
+      logo: { src: "/logos/telemundo-generic.png", x: 44, y: 556, width: 166 },
       headline: {
-        box: { x: 56, y: 470, width: 1168, height: 190 },
-        font: "Arial, Helvetica, sans-serif",
-        weight: 800,
-        sizePx: 80,
+        box: { x: 256, y: 470, width: 984, height: 230 },
+        font: HEADLINE_FONT,
+        weight: "normal",
+        sizePx: 92,
         minSizePx: 40,
         color: "#ffffff",
+        strokeColor: STROKE,
+        strokeWidthPx: 3,
         align: "left",
         verticalAlign: "bottom",
-        lineHeight: 1.05,
+        lineHeight: 1.0,
         transform: "uppercase",
         maxLines: 3,
       },
@@ -55,35 +62,39 @@ export const telemundoGeneric: StationTemplate = {
         type: "linear",
         angle: 90,
         stops: [
-          { offset: 0.45, color: "rgba(13,59,143,0)" },
-          { offset: 1, color: "rgba(13,59,143,0.92)" },
+          { offset: 0, color: "rgba(0,0,0,0)" },
+          { offset: 0.5, color: "rgba(0,0,0,0)" },
+          { offset: 0.72, color: "rgba(0,0,0,0.4)" },
+          { offset: 1, color: "rgba(0,0,0,0.97)" },
         ],
         box: { x: 0, y: 0, width: 1080, height: 1920 },
       },
       decorations: [
         {
           type: "gradientRect",
-          box: { x: 0, y: 1896, width: 1080, height: 24 },
-          angle: 0,
+          box: { x: 0, y: 0, width: 1080, height: 160 },
+          angle: 90,
           stops: [
-            { offset: 0, color: "#ff7a00" },
-            { offset: 1, color: TELEMUNDO_BLUE },
+            { offset: 0, color: "rgba(0,0,0,0.2)" },
+            { offset: 1, color: "rgba(0,0,0,0)" },
           ],
         },
       ],
-      logo: { src: "/logos/telemundo-generic.svg", x: 72, y: 90, width: 300 },
+      logo: { src: "/logos/telemundo-generic.png", x: 56, y: 1570, width: 237 },
       headline: {
-        box: { x: 72, y: 1300, width: 936, height: 500 },
-        font: "Arial, Helvetica, sans-serif",
-        weight: 800,
-        sizePx: 104,
-        minSizePx: 52,
+        box: { x: 336, y: 1430, width: 694, height: 350 },
+        font: HEADLINE_FONT,
+        weight: "normal",
+        sizePx: 96,
+        minSizePx: 42,
         color: "#ffffff",
+        strokeColor: STROKE,
+        strokeWidthPx: 4,
         align: "left",
         verticalAlign: "bottom",
-        lineHeight: 1.05,
+        lineHeight: 1.0,
         transform: "uppercase",
-        maxLines: 4,
+        maxLines: 3,
       },
     },
   },

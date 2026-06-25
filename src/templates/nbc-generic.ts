@@ -1,9 +1,11 @@
 import type { StationTemplate } from "./types";
 
-// Generic NBC-style template. Placeholder design used until a real station PSD
-// is translated. Demonstrates the full layer stack: photo, bottom scrim,
-// brand color bar, logo, and headline.
-const NBC_BLUE = "#0089d0";
+// Generic NBC template — WTVJ "Miami" style (full-bleed photo, vertical scrim
+// ramping to near-black at the bottom, faint top vignette, bottom-aligned
+// headline in Arthouse Owned Bold) with the generic NBC peacock logo. Use as a
+// starting point for any NBC station that doesn't yet have its own template.
+const HEADLINE_FONT = '"Arthouse Owned Bold"';
+const STROKE = "rgba(0,0,0,0.5)";
 
 export const nbcGeneric: StationTemplate = {
   id: "nbc-generic",
@@ -17,25 +19,37 @@ export const nbcGeneric: StationTemplate = {
         type: "linear",
         angle: 90,
         stops: [
-          { offset: 0.45, color: "rgba(0,0,0,0)" },
-          { offset: 1, color: "rgba(0,0,0,0.85)" },
+          { offset: 0, color: "rgba(0,0,0,0)" },
+          { offset: 0.5, color: "rgba(0,0,0,0)" },
+          { offset: 0.72, color: "rgba(0,0,0,0.35)" },
+          { offset: 1, color: "rgba(0,0,0,0.95)" },
         ],
         box: { x: 0, y: 0, width: 1280, height: 720 },
       },
       decorations: [
-        { type: "rect", box: { x: 0, y: 612, width: 12, height: 108 }, color: NBC_BLUE },
+        {
+          type: "gradientRect",
+          box: { x: 0, y: 0, width: 1280, height: 120 },
+          angle: 90,
+          stops: [
+            { offset: 0, color: "rgba(0,0,0,0.22)" },
+            { offset: 1, color: "rgba(0,0,0,0)" },
+          ],
+        },
       ],
-      logo: { src: "/logos/nbc-generic.svg", x: 56, y: 48, width: 150 },
+      logo: { src: "/logos/nbc-generic.png", x: 44, y: 586, width: 182 },
       headline: {
-        box: { x: 56, y: 470, width: 1000, height: 200 },
-        font: "Arial, Helvetica, sans-serif",
-        weight: 800,
-        sizePx: 84,
+        box: { x: 256, y: 470, width: 984, height: 230 },
+        font: HEADLINE_FONT,
+        weight: "normal",
+        sizePx: 92,
         minSizePx: 40,
         color: "#ffffff",
+        strokeColor: STROKE,
+        strokeWidthPx: 3,
         align: "left",
         verticalAlign: "bottom",
-        lineHeight: 1.05,
+        lineHeight: 1.0,
         transform: "uppercase",
         maxLines: 3,
       },
@@ -47,27 +61,39 @@ export const nbcGeneric: StationTemplate = {
         type: "linear",
         angle: 90,
         stops: [
+          { offset: 0, color: "rgba(0,0,0,0)" },
           { offset: 0.5, color: "rgba(0,0,0,0)" },
-          { offset: 1, color: "rgba(0,0,0,0.88)" },
+          { offset: 0.72, color: "rgba(0,0,0,0.4)" },
+          { offset: 1, color: "rgba(0,0,0,0.97)" },
         ],
         box: { x: 0, y: 0, width: 1080, height: 1920 },
       },
       decorations: [
-        { type: "rect", box: { x: 0, y: 1560, width: 16, height: 360 }, color: NBC_BLUE },
+        {
+          type: "gradientRect",
+          box: { x: 0, y: 0, width: 1080, height: 160 },
+          angle: 90,
+          stops: [
+            { offset: 0, color: "rgba(0,0,0,0.2)" },
+            { offset: 1, color: "rgba(0,0,0,0)" },
+          ],
+        },
       ],
-      logo: { src: "/logos/nbc-generic.svg", x: 72, y: 90, width: 200 },
+      logo: { src: "/logos/nbc-generic.png", x: 56, y: 1620, width: 249 },
       headline: {
-        box: { x: 72, y: 1320, width: 940, height: 480 },
-        font: "Arial, Helvetica, sans-serif",
-        weight: 800,
-        sizePx: 110,
-        minSizePx: 56,
+        box: { x: 336, y: 1430, width: 694, height: 350 },
+        font: HEADLINE_FONT,
+        weight: "normal",
+        sizePx: 96,
+        minSizePx: 42,
         color: "#ffffff",
+        strokeColor: STROKE,
+        strokeWidthPx: 4,
         align: "left",
         verticalAlign: "bottom",
-        lineHeight: 1.05,
+        lineHeight: 1.0,
         transform: "uppercase",
-        maxLines: 4,
+        maxLines: 3,
       },
     },
   },
