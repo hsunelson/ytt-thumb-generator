@@ -148,6 +148,17 @@ function drawHeadline(
   const minSize = spec.minSizePx ?? 24;
   const weight = spec.weight ?? "normal";
 
+  // Highlight-block padding and inter-line gap (all 0 when no highlight, which
+  // makes the geometry below reduce to plain line stacking).
+  const hl = spec.highlight;
+  const padX = hl?.padX ?? 0;
+  const padY = hl?.padY ?? 0;
+  const gap = hl?.lineGap ?? 0;
+
+  // Total height of the stacked line-blocks at a given line height.
+  const stackHeight = (lineHeightPx: number, n: number) =>
+    n * (lineHeightPx + 2 * padY) + Math.max(0, n - 1) * gap;
+
   let size = spec.sizePx;
   let lines: string[] = [];
 
@@ -156,7 +167,7 @@ function drawHeadline(
     const wrapped = wrapText(ctx, text, spec.box.width);
     const fits =
       wrapped.length <= spec.maxLines &&
-      wrapped.length * size * spec.lineHeight <= spec.box.height &&
+      stackHeight(size * spec.lineHeight, wrapped.length) <= spec.box.height &&
       wrapped.every((l) => ctx.measureText(l).width <= spec.box.width);
     if (fits) {
       lines = wrapped;
@@ -172,15 +183,16 @@ function drawHeadline(
   }
 
   const lineHeightPx = Math.max(size, minSize) * spec.lineHeight;
-  const blockHeight = lines.length * lineHeightPx;
+  const blockH = lineHeightPx + 2 * padY; // height of one line's block
+  const stackH = stackHeight(lineHeightPx, lines.length);
 
-  let startY: number;
+  let startY: number; // top of the first block
   switch (spec.verticalAlign ?? "top") {
     case "middle":
-      startY = spec.box.y + (spec.box.height - blockHeight) / 2;
+      startY = spec.box.y + (spec.box.height - stackH) / 2;
       break;
     case "bottom":
-      startY = spec.box.y + spec.box.height - blockHeight;
+      startY = spec.box.y + spec.box.height - stackH;
       break;
     default:
       startY = spec.box.y;
@@ -196,9 +208,9 @@ function drawHeadline(
         ? spec.box.x + spec.box.width
         : spec.box.x + spec.box.width / 2;
 
-  // Per-line geometry: each line's left edge, top, and rendered text width.
-  // (Highlight blocks and accents are only meaningful for left alignment, which
-  // is what the block-style designs use.)
+  // Per-line geometry. `blockTop` is the top of this line's highlight block;
+  // text sits inset by `padY`. (Highlight blocks and accents are only meaningful
+  // for left alignment, which is what the block-style designs use.)
   const lineInfos = lines.map((line, i) => {
     const textWidth = ctx.measureText(line).width;
     const left =
@@ -207,26 +219,21 @@ function drawHeadline(
         : spec.align === "center"
           ? spec.box.x + (spec.box.width - textWidth) / 2
           : spec.box.x;
-    return { line, top: startY + i * lineHeightPx, textWidth, left };
+    const blockTop = startY + i * (blockH + gap);
+    return { line, textWidth, left, blockTop, top: blockTop + padY };
   });
 
-  const hl = spec.highlight;
-
   // Corner accents (drawn first, behind everything). Anchored to the first
-  // line's top-left and the last line's bottom-right block corner.
+  // line block's top-left and the last line block's bottom-right corner.
   if (spec.accents && lineInfos.length > 0 && images) {
     const first = lineInfos[0];
     const last = lineInfos[lineInfos.length - 1];
-    const padX = hl?.padX ?? 0;
-    const padY = hl?.padY ?? 0;
     for (const a of spec.accents) {
       const img = images[a.src];
       if (!img) continue;
-      let cornerX: number;
-      let cornerY: number;
       if (a.corner === "tl") {
-        cornerX = first.left - padX;
-        cornerY = first.top - padY;
+        const cornerX = first.left - padX;
+        const cornerY = first.blockTop;
         drawImageInBox(
           ctx,
           img,
@@ -239,8 +246,8 @@ function drawHeadline(
           "cover",
         );
       } else {
-        cornerX = last.left + last.textWidth + padX;
-        cornerY = last.top + lineHeightPx + padY;
+        const cornerX = last.left + last.textWidth + padX;
+        const cornerY = last.blockTop + blockH;
         drawImageInBox(
           ctx,
           img,
@@ -261,10 +268,10 @@ function drawHeadline(
     ctx.fillStyle = hl.color;
     for (const info of lineInfos) {
       ctx.fillRect(
-        info.left - hl.padX,
-        info.top - hl.padY,
-        info.textWidth + hl.padX * 2,
-        lineHeightPx + hl.padY * 2,
+        info.left - padX,
+        info.blockTop,
+        info.textWidth + padX * 2,
+        blockH,
       );
     }
   }

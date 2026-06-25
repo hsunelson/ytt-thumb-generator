@@ -9,7 +9,7 @@ import type { StationTemplate } from "./types";
 //
 // Headline font reuses Arthouse Owned Bold (the face we already ship); swap if
 // KNSD provides a different typeface.
-const HEADLINE_FONT = '"Arthouse Owned Bold"';
+const HEADLINE_FONT = '"Arthouse Owned Condensed Medium"';
 const STRIPES = "/patterns/knsd-stripes.png";
 
 export const knsd: StationTemplate = {
@@ -34,7 +34,7 @@ export const knsd: StationTemplate = {
         lineHeight: 1.0,
         transform: "uppercase",
         maxLines: 3,
-        highlight: { color: "#ffffff", padX: 18, padY: 12, lineGap: 8 },
+        highlight: { color: "#ffffff", padX: 18, padY: 12, lineGap: 5 },
         accents: [
           { src: STRIPES, corner: "tl", width: 150, height: 100, stickX: 12, stickY: 14 },
           { src: STRIPES, corner: "br", width: 150, height: 100, stickX: 12, stickY: 14 },
@@ -57,7 +57,7 @@ export const knsd: StationTemplate = {
         lineHeight: 1.0,
         transform: "uppercase",
         maxLines: 3,
-        highlight: { color: "#ffffff", padX: 20, padY: 14, lineGap: 8 },
+        highlight: { color: "#ffffff", padX: 20, padY: 14, lineGap: 5 },
         accents: [
           { src: STRIPES, corner: "tl", width: 170, height: 110, stickX: 14, stickY: 16 },
           { src: STRIPES, corner: "br", width: 170, height: 110, stickX: 14, stickY: 16 },
