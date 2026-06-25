@@ -65,6 +65,9 @@ export interface HeadlineSpec {
   sizePx: number; // starting size; auto-shrinks to fit the box
   minSizePx?: number; // lower bound when shrinking (default 24)
   color: string;
+  // optional outline drawn behind the fill (for legibility over busy photos)
+  strokeColor?: string;
+  strokeWidthPx?: number;
   align: "left" | "center" | "right";
   // vertical anchoring of the text block within the box
   verticalAlign?: "top" | "middle" | "bottom";

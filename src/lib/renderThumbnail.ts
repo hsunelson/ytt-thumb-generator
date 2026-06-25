@@ -191,8 +191,18 @@ function drawHeadline(
         ? spec.box.x + spec.box.width
         : spec.box.x + spec.box.width / 2;
 
+  const hasStroke = spec.strokeColor && (spec.strokeWidthPx ?? 0) > 0;
+  if (hasStroke) {
+    ctx.strokeStyle = spec.strokeColor as string;
+    ctx.lineWidth = spec.strokeWidthPx as number;
+    ctx.lineJoin = "round";
+    ctx.miterLimit = 2;
+  }
+
   lines.forEach((line, i) => {
-    ctx.fillText(line, anchorX, startY + i * lineHeightPx);
+    const y = startY + i * lineHeightPx;
+    if (hasStroke) ctx.strokeText(line, anchorX, y);
+    ctx.fillText(line, anchorX, y);
   });
 }
 

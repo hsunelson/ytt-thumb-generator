@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Station brand fonts. The family names here are referenced by template
+   headline specs and by the Canvas renderer. */
+@font-face {
+  font-family: "Arthouse Owned Bold";
+  src: url("/fonts/ArthouseOwnedBold.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
 }

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="340" height="170" viewBox="0 0 340 170">
+  <!-- Recreation of the NBC 6 (WTVJ) lockup: peacock + numeral. Swap with the
+       official station vector when available. -->
+  <!-- Numeral 6, white -->
+  <text x="150" y="150" font-family="Arial, Helvetica, sans-serif" font-size="180"
+        font-weight="800" fill="#ffffff">6</text>
+  <!-- Peacock, nested at lower-left -->
+  <g transform="translate(70 112)">
+    <path d="M0 0 L0 -40 A40 40 0 0 1 34 -20 Z" fill="#FCB711"/>
+    <path d="M0 0 L34 -20 A40 40 0 0 1 34 20 Z" fill="#F37021"/>
+    <path d="M0 0 L34 20 A40 40 0 0 1 0 40 Z" fill="#CC004C"/>
+    <path d="M0 0 L0 40 A40 40 0 0 1 -34 20 Z" fill="#6460AA"/>
+    <path d="M0 0 L-34 20 A40 40 0 0 1 -34 -20 Z" fill="#0089D0"/>
+    <path d="M0 0 L-34 -20 A40 40 0 0 1 0 -40 Z" fill="#0DB14B"/>
+    <circle cx="0" cy="0" r="9" fill="#ffffff"/>
+  </g>
+</svg>

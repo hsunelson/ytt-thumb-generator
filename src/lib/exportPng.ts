@@ -35,12 +35,21 @@ function triggerDownload(blob: Blob, filename: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-// Renders the layout and downloads it as a PNG.
+// Renders the layout and downloads it as a PNG. Waits for web fonts so the
+// exported headline uses the correct typeface.
 export async function downloadThumbnail(
   layout: Layout,
   inputs: RenderInputs,
   filename: string,
 ): Promise<void> {
+  if (typeof document !== "undefined" && document.fonts) {
+    try {
+      await document.fonts.load(`1em ${layout.headline.font}`);
+      await document.fonts.ready;
+    } catch {
+      // fall through and render with whatever is available
+    }
+  }
   const canvas = renderToCanvas(layout, inputs);
   const blob = await canvasToBlob(canvas);
   triggerDownload(blob, filename);
