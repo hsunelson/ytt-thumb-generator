@@ -2,23 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Station brand fonts. The family names here are referenced by template
-   headline specs and by the Canvas renderer. */
-@font-face {
-  font-family: "Arthouse Owned Bold";
-  src: url("/fonts/ArthouseOwnedBold.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Arthouse Owned Condensed Medium";
-  src: url("/fonts/ArthouseOwnedCondensedMedium.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
+/* Station brand fonts are loaded at runtime via the FontFace API in
+   src/components/FontLoader.tsx (so their URLs respect the base path when the
+   app is served under a subpath). The family names there match the strings used
+   by the Canvas renderer. */
 
 :root {
   color-scheme: dark;

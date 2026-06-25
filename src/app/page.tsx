@@ -16,6 +16,7 @@ import {
   type CropArea,
 } from "@/lib/images";
 import { collectImageSrcs } from "@/lib/layoutImages";
+import { withBasePath } from "@/lib/basePath";
 import type { RenderInputs } from "@/lib/renderThumbnail";
 import { downloadThumbnail } from "@/lib/exportPng";
 
@@ -72,7 +73,9 @@ export default function Home() {
     );
     srcs.forEach((src) => {
       if (images[src]) return;
-      loadImage(src)
+      // Fetch through the base path, but key by the original template src so the
+      // renderer's image lookups (by layout src) still match.
+      loadImage(withBasePath(src))
         .then((img) => setImages((prev) => ({ ...prev, [src]: img })))
         .catch(() => {});
     });

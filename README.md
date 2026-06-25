@@ -70,6 +70,30 @@ a station is config + a logo asset.
 > The repo ships generic NBC and Telemundo placeholder templates so the app runs
 > immediately. Replace them with real station designs as PSDs + logos arrive.
 
+## Deploy to GitHub Pages
+
+The app deploys to a GitHub **project page** at
+`https://hsunelson.github.io/ytt-thumb-generator/` via GitHub Actions
+(`.github/workflows/deploy-pages.yml`).
+
+**One-time setup:** in the repo, go to **Settings → Pages → Build and deployment**
+and set **Source = "GitHub Actions"**. (This can't be scripted.)
+
+After that, the workflow builds and publishes on every push to `main` (or run it
+manually from the **Actions** tab via "Run workflow"). To deploy from a different
+branch, edit the `branches:` list in the workflow or dispatch it from that branch.
+
+How the subpath is handled: a project page is served under `/ytt-thumb-generator/`,
+so the workflow builds with `NEXT_PUBLIC_BASE_PATH=/ytt-thumb-generator`. That
+sets Next's `basePath`/`assetPrefix`, and our runtime asset loading (fonts via
+`src/components/FontLoader.tsx`, logos/patterns via `withBasePath` in
+`src/lib/basePath.ts`) prefixes the same path. Local dev and the S3 build leave
+the env var empty, so they serve from the root. A `public/.nojekyll` file keeps
+GitHub Pages from stripping the `_next` folder.
+
+> Using a **custom domain** instead? It serves from the root, so set
+> `NEXT_PUBLIC_BASE_PATH` empty in the workflow and add your `CNAME`.
+
 ## Deploy to S3
 
 The app is a static site, so deploy is "build → sync to bucket":
