@@ -45,7 +45,7 @@ function defaultCropArea(
 export default function Home() {
   const [stationId, setStationId] = useState(STATIONS[0].id);
   const [orientation, setOrientation] = useState<Orientation>("horizontal");
-  const [headline, setHeadline] = useState("Breaking news headline goes here");
+  const [headline, setHeadline] = useState("Short title goes here");
 
   const [source, setSource] = useState<{ url: string; image: HTMLImageElement } | null>(
     null,

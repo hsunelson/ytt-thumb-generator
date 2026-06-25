@@ -45,9 +45,9 @@ export const wtvj: StationTemplate = {
           ],
         },
       ],
-      logo: { src: "/logos/wtvj-logo.png", x: 44, y: 548, width: 180 },
+      logo: { src: "/logos/wtvj-logo.png", x: 44, y: 510, width: 180 },
       headline: {
-        box: { x: 256, y: 470, width: 984, height: 230 },
+        box: { x: 256, y: 445, width: 984, height: 230 },
         font: HEADLINE_FONT,
         weight: "normal",
         sizePx: 92,
