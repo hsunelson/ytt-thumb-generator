@@ -86,7 +86,11 @@ export interface HeadlineHighlight {
   color: string; // block fill, e.g. "#ffffff"
   padX: number; // horizontal padding around the text (px)
   padY: number; // vertical padding around the text (px)
-  lineGap: number; // vertical gap between stacked line-blocks (px)
+  lineGap: number; // vertical gap between lines (px)
+  // "per-line" (default): one block per line, sized to that line (KNSD).
+  // "block": a single box around the whole text block (WNBC pill).
+  mode?: "per-line" | "block";
+  radius?: number; // corner radius for the block (px); rounded pill when > 0
 }
 
 export interface HeadlineAccent {

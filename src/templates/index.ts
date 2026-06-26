@@ -2,6 +2,7 @@ import type { StationTemplate } from "./types";
 import { wtvj } from "./wtvj";
 import { wscv } from "./wscv";
 import { knsd } from "./knsd";
+import { wnbc } from "./wnbc";
 import { nbcGeneric } from "./nbc-generic";
 import { telemundoGeneric } from "./telemundo-generic";
 
@@ -12,6 +13,7 @@ export const STATIONS: StationTemplate[] = [
   wtvj,
   wscv,
   knsd,
+  wnbc,
   nbcGeneric,
   telemundoGeneric,
 ];

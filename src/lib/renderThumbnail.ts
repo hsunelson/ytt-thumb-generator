@@ -148,16 +148,21 @@ function drawHeadline(
   const minSize = spec.minSizePx ?? 24;
   const weight = spec.weight ?? "normal";
 
-  // Highlight-block padding and inter-line gap (all 0 when no highlight, which
-  // makes the geometry below reduce to plain line stacking).
+  // Highlight padding and inter-line gap (all 0 when no highlight, which makes
+  // the geometry below reduce to plain line stacking).
   const hl = spec.highlight;
   const padX = hl?.padX ?? 0;
   const padY = hl?.padY ?? 0;
   const gap = hl?.lineGap ?? 0;
+  // "block" mode wraps the whole text block in one (rounded) box, so padding is
+  // applied once around the outside; "per-line" pads each line's block.
+  const blockMode = hl?.mode === "block";
 
-  // Total height of the stacked line-blocks at a given line height.
+  // Total height of the highlighted text stack at a given line height.
   const stackHeight = (lineHeightPx: number, n: number) =>
-    n * (lineHeightPx + 2 * padY) + Math.max(0, n - 1) * gap;
+    blockMode
+      ? n * lineHeightPx + Math.max(0, n - 1) * gap + 2 * padY
+      : n * (lineHeightPx + 2 * padY) + Math.max(0, n - 1) * gap;
 
   let size = spec.sizePx;
   let lines: string[] = [];
@@ -208,9 +213,10 @@ function drawHeadline(
         ? spec.box.x + spec.box.width
         : spec.box.x + spec.box.width / 2;
 
-  // Per-line geometry. `blockTop` is the top of this line's highlight block;
-  // text sits inset by `padY`. (Highlight blocks and accents are only meaningful
-  // for left alignment, which is what the block-style designs use.)
+  // Per-line geometry. In per-line mode each line advances by its own padded
+  // block height; in block mode (single outer box) lines are spaced tightly.
+  // `blockTop` is this line's block top (per-line mode); text sits inset by padY.
+  const lineAdvance = (blockMode ? lineHeightPx : blockH) + gap;
   const lineInfos = lines.map((line, i) => {
     const textWidth = ctx.measureText(line).width;
     const left =
@@ -219,7 +225,7 @@ function drawHeadline(
         : spec.align === "center"
           ? spec.box.x + (spec.box.width - textWidth) / 2
           : spec.box.x;
-    const blockTop = startY + i * (blockH + gap);
+    const blockTop = startY + i * lineAdvance;
     return { line, textWidth, left, blockTop, top: blockTop + padY };
   });
 
@@ -263,16 +269,18 @@ function drawHeadline(
     }
   }
 
-  // Per-line highlight blocks (drawn over the accents, behind the text).
-  if (hl) {
+  // Highlight (drawn over the accents, behind the text).
+  if (hl && lineInfos.length > 0) {
     ctx.fillStyle = hl.color;
-    for (const info of lineInfos) {
-      ctx.fillRect(
-        info.left - padX,
-        info.blockTop,
-        info.textWidth + padX * 2,
-        blockH,
-      );
+    if (blockMode) {
+      // One (optionally rounded) box around the whole text block.
+      const left = Math.min(...lineInfos.map((i) => i.left)) - padX;
+      const right = Math.max(...lineInfos.map((i) => i.left + i.textWidth)) + padX;
+      fillRect(ctx, left, startY, right - left, stackH, hl.radius ?? 0);
+    } else {
+      for (const info of lineInfos) {
+        fillRect(ctx, info.left - padX, info.blockTop, info.textWidth + padX * 2, blockH, 0);
+      }
     }
   }
 
@@ -290,6 +298,31 @@ function drawHeadline(
     if (hasStroke) ctx.strokeText(info.line, anchorX, info.top);
     ctx.fillText(info.line, anchorX, info.top);
   });
+}
+
+// Fills a rectangle, with rounded corners when radius > 0. Uses the current
+// fillStyle.
+function fillRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radius: number,
+): void {
+  if (radius <= 0) {
+    ctx.fillRect(x, y, w, h);
+    return;
+  }
+  const r = Math.min(radius, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+  ctx.fill();
 }
 
 // Greedy word-wrap to a max pixel width. Words longer than the width are
