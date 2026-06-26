@@ -45,7 +45,8 @@ export const wnju: StationTemplate = {
       photo: { x: 0, y: 0, width: 1080, height: 1920, fit: "cover" },
       logo: { src: "/logos/wnju-logo.png", x: 44, y: 48, width: 224 },
       headline: {
-        box: { x: 40, y: 1440, width: 1000, height: 340 },
+        // width 946 + 2*padX(52) = 1050 pill, centered on 1080 → ≥15px side margin
+        box: { x: 67, y: 1440, width: 946, height: 340 },
         font: HEADLINE_FONT,
         weight: "normal",
         sizePx: 100,
