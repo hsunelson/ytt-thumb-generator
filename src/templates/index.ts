@@ -4,6 +4,8 @@ import { wscv } from "./wscv";
 import { knsd } from "./knsd";
 import { wnbc } from "./wnbc";
 import { wnju } from "./wnju";
+import { knbc } from "./knbc";
+import { kvea } from "./kvea";
 import { nbcGeneric } from "./nbc-generic";
 import { telemundoGeneric } from "./telemundo-generic";
 
@@ -16,6 +18,8 @@ export const STATIONS: StationTemplate[] = [
   knsd,
   wnbc,
   wnju,
+  knbc,
+  kvea,
   nbcGeneric,
   telemundoGeneric,
 ];
