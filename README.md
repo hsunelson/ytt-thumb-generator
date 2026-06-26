@@ -40,35 +40,94 @@ Key files:
 | `src/lib/images.ts` | image load + crop helpers |
 | `src/app/page.tsx` | UI orchestration |
 
-## Add a new station
+## Add or modify a station
 
-Each PSD becomes one template config. There are **no renderer changes** — adding
-a station is config + a logo asset.
+Every station is one config file in `src/templates/<id>.ts` + a logo in
+`public/logos/`, registered in `src/templates/index.ts`. The renderer does
+**not** need to change for a typical new station — you're filling in coordinates
+and colors. Two formats live in one file: `layouts.horizontal` (1280×720) and
+`layouts.vertical` (1080×1920).
 
-1. **Logo:** export the station's logo layer as a transparent PNG/SVG to
-   `public/logos/<station-id>.png`.
-2. **Read coordinates from the PSD** for both the landscape (1280×720) and
-   vertical (1080×1920) comps: the photo area, logo position/size, headline text
-   box, and any brand color bars. Scale the PSD to those canvas sizes if needed.
-3. **Create `src/templates/<station-id>.ts`** exporting a `StationTemplate` with
-   a `layouts.horizontal` and `layouts.vertical`. Copy
-   `src/templates/nbc-generic.ts` as a starting point. Fill in:
-   - `photo` box (usually full-bleed `cover`),
-   - `overlay` gradient/scrim for text legibility,
-   - `decorations` for brand bars/accents,
-   - `logo` `{ src, x, y, width }`,
-   - `headline` `{ box, font, sizePx, color, align, transform, maxLines, … }`.
-4. **Fonts:** to match the PSD typography, add the brand font and set
-   `headline.font`. Local fonts go in `public/fonts/` and are wired via
-   `next/font/local` in `src/app/layout.tsx`; reference the resulting font
-   family in the template.
-5. **Register it:** import the template in `src/templates/index.ts` and add it to
-   `STATIONS`.
-6. **Verify:** `npm run dev`, select the station, and eyeball the preview against
-   the PSD; nudge coordinates until it matches.
+### Clone a design family (the fast path)
+
+Most stations match one of three existing "families." Copy the closest one:
+
+| Family | Clone from | Look |
+| --- | --- | --- |
+| **Miami** | `wtvj.ts` / `wscv.ts` / `knbc.ts` / `kvea.ts` | full-bleed photo, bottom scrim, **bottom-left logo**, white outlined headline |
+| **Stripes** | `knsd.ts` | **top-right logo**, black text on per-line white `highlight` blocks + corner `accents` |
+| **Pill** | `wnbc.ts` / `wnju.ts` | **top-left logo**, centered white text in a rounded `highlight` (`mode: "block"`) pill |
+
+Steps:
+
+1. **Logo** → save the transparent PNG to `public/logos/<id>.png` (used as-is).
+   - If the logo looks empty on a white preview, it may have **white elements on
+     transparency** — composite it over a dark color to inspect.
+   - If the artwork floats in a mostly-empty canvas, **trim** the transparent
+     margins so it positions predictably.
+2. **Copy the closest template** to `src/templates/<id>.ts`; change
+   `id` / `name` / `network` / `logo.src`.
+3. **Tune to the comps:** `logo` `{ x, y, width }` (adjust width for the new
+   logo's aspect ratio) and `headline.box` `{ x, y, width, height }`.
+4. **Register:** import it in `src/templates/index.ts` and add it to `STATIONS`.
+5. **Preview:** `npm run dev`, pick the station, and nudge values until it
+   matches the comp.
+
+### Headline capabilities (what the config can express)
+
+`headline` supports, beyond the basics (`box`, `font`, `sizePx` with auto-shrink,
+`minSizePx`, `color`, `align`, `verticalAlign`, `lineHeight`, `transform`,
+`maxLines`):
+
+- **`strokeColor` / `strokeWidthPx`** — text outline (Miami family).
+- **`highlight`** `{ color, padX, padY, lineGap, mode?, radius? }` — a background
+  behind the text. `mode: "per-line"` (default) draws one block per line (KNSD);
+  `mode: "block"` draws a single box around the whole headline, with `radius` for
+  a rounded pill (WNBC).
+- **`accents`** `[{ src, corner: "tl"|"br", width, height, stickX, stickY }]` —
+  image patches tucked behind the text-block corners (KNSD stripes). Referenced
+  images are loaded automatically (see `src/lib/layoutImages.ts`).
+
+### Fonts
+
+Brand fonts are loaded at runtime (so URLs work under the GitHub Pages subpath):
+
+1. Drop the `.woff` in `public/fonts/`.
+2. Add it to the `FONTS` list in `src/components/FontLoader.tsx` with a stable
+   family name.
+3. Reference that family in the template's `headline.font`.
+
+### A brand-new design (not cloning a family)
+
+Start a blank `StationTemplate` — only `canvas`, `photo`, `logo`, and `headline`
+are required per layout; omit `overlay` / `decorations` / `background` /
+`highlight` / `accents` when unused. Mix the building blocks (photo box,
+gradient `overlay` scrim, `decorations` rects/gradient rects, logo, headline) to
+match the comp.
+
+If the design needs a **visual primitive the renderer doesn't have yet** (a
+circular/cropped logo, a non-rectangular shape, a text drop shadow, a second text
+field, a bordered box, …), add it as an **optional** field in
+`src/templates/types.ts` and handle it in `src/lib/renderThumbnail.ts` — keeping
+it optional so existing stations are unaffected. This is the same pattern used
+for KNSD's `accents` and WNBC's pill, and it makes the primitive reusable by any
+future station. Rule of thumb: **new layout → config only; new visual element →
+small renderer add + config.**
+
+### Modifying an existing station
+
+Edit its `src/templates/<id>.ts` (logo `x/y/width`, `headline.box`, colors, pill
+`radius`/padding, etc.). Note that each file currently **duplicates** its
+family's style, so a change affects only that one station — not its siblings.
+
+### Delivering assets
+
+Zip the PNGs (and any font) and attach the **`.zip`**. Inline-pasted images don't
+come through as files; the only formats that reliably attach are file uploads
+(a `.zip` of PNGs works well).
 
 > The repo ships generic NBC and Telemundo placeholder templates so the app runs
-> immediately. Replace them with real station designs as PSDs + logos arrive.
+> immediately even before real station designs are added.
 
 ## Deploy to GitHub Pages
 
